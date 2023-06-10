@@ -40,6 +40,17 @@ public struct Header<Value: CustomStringConvertible> {
     }
 }
 
+@propertyWrapper
+public struct FieldParam<Value: CustomStringConvertible> {
+    public var wrappedValue: Value
+    let name: String?
+    
+    public init(wrappedValue: Value, _ name: String? = nil) {
+        self.wrappedValue = wrappedValue
+        self.name = name
+    }
+}
+
 extension Optional: CustomStringConvertible where Wrapped: CustomStringConvertible {
     public var description: String {
         self?.description ?? "nil"

@@ -39,6 +39,10 @@ struct RequestDiagnostics{
     func uniquePathParams(node: Syntax) -> Diagnostic {
         diagnostic(for: node, text: "@\(method) requires unique path params", id: "uniquePathParams")
     }
+    
+    func bodyAndFields(node: Syntax) -> Diagnostic {
+        diagnostic(for: node, text: "@\(method) requires either a body or fields, but not both", id: "bodyAndFields")
+    }
 }
 
 struct MacroExpansionError: Error {}

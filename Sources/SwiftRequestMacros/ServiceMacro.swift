@@ -8,16 +8,29 @@ public struct ServiceMacro: MemberMacro {
         providingMembersOf declaration: some DeclGroupSyntax,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        return [
+        let attribute = Attribute(from: node)
+        let route = attribute.arguments.first?.value
+        
+        let baseUrlExpr = if let route {
+            "baseURL.appendingPathComponent(\"\(route)\")"
+        } else {
+            "baseURL"
+        }
+        
+        let declarations: [DeclSyntax] = [
             """
             private let baseURL: URL
             private let session: URLSession
-            init(baseURL: URL, session: URLSession = .shared) {
-                self.baseURL = baseURL
+            """,
+            """
+            required init(baseURL: URL, session: URLSession) {
+                self.baseURL = \(raw: baseUrlExpr)
                 self.session = session
             }
             """
         ]
+        
+        return declarations
     }
 }
 

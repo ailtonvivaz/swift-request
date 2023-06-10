@@ -6,19 +6,15 @@ struct FunctionParameter {
     let name: String
     let type: String
     let optional: Bool
-}
-
-struct Attribute {
-    let name: String
-    let arguments: [AttributeArgument]
-}
-
-struct AttributeArgument {
-    let label: String?
-    let value: String
-}
-
-extension FunctionParameter {
+    
+    init(attribute: Attribute, label: String?, name: String, type: String, optional: Bool) {
+        self.attribute = attribute
+        self.label = label
+        self.name = name
+        self.type = type
+        self.optional = optional
+    }
+    
     init(from syntax: FunctionParameterSyntax) {
         let attributes = syntax.attributes?.compactMap(Attribute.init) ?? []
         let label: String?
@@ -43,32 +39,6 @@ extension FunctionParameter {
     }
 }
 
-extension Attribute {
-    init(from syntax: AttributeSyntax) {
-        let name = syntax.attributeName.as(SimpleTypeIdentifierSyntax.self)?.name.text ?? syntax.attributeName.description
-        let arguments = syntax.argument?.as(TupleExprElementListSyntax.self)?.map(AttributeArgument.init) ?? []
-        
-        self.init(name: name, arguments: arguments)
-    }
-    
-    init?(from syntax: AttributeListSyntax.Element) {
-        guard let syntax = syntax.as(AttributeSyntax.self) else {
-            return nil
-        }
-        
-        self.init(from: syntax)
-    }
-}
-
-extension AttributeArgument {
-    init(from syntax: TupleExprElementSyntax) {
-        let label = syntax.label?.text
-        let value = syntax.expression.as(StringLiteralExprSyntax.self)?.segments.first?.description
-        
-        self.init(label: label, value: value!)
-    }
-}
-
 typealias FunctionParameters = [FunctionParameter]
 
 extension FunctionParameters {
@@ -90,6 +60,10 @@ extension FunctionParameters {
     
     func getBody() -> FunctionParameter? {
         first { $0.attribute.name == "Body" }
+    }
+    
+    func getFieldParams() -> [FunctionParameter] {
+        filter { $0.attribute.name == "FieldParam" }
     }
 }
 

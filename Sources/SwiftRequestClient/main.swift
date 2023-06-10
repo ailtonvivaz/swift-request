@@ -15,12 +15,12 @@ struct Quote: Decodable {
     }
 }
 
-@Service
+@Service(route: "quotes")
 class QuoteService {
-    @GET<[Quote]>("quotes/random")
+    @GET<[Quote]>("random")
     private func getRandomQuotes(@QueryParam("author") authorSlug: String? = nil) {}
     
-    @GET<Quote>("quotes/{id}")
+    @GET<Quote>("{id}")
     private func getQuote(@PathParam by id: String) {}
 }
 

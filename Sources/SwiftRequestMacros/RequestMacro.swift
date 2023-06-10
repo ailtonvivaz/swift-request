@@ -46,14 +46,21 @@ public class RequestMacro: PeerMacro {
         let urlDecl = generateUrlDecl(endpoint: endpointDecl, queryParams: queryParamsDecl)
         let requestDecl = generateRequestDecl()
         
-        let headersExpr = generateHeadersDecl(from: functionParameters, defaultHeaders: defaultHeaders)
-        let bodyExpr = generateBodyDecl(from: functionParameters)
+        let headersDecl = generateHeadersDecl(from: functionParameters, defaultHeaders: defaultHeaders)
+        
+        if functionParameters.getFieldParams().count > 0 && functionParameters.getBody() != nil {
+            context.diagnose(diagnostics.bodyAndFields(node: Syntax(node)))
+            return []
+        }
+        
+        let fieldsDecl = generateFieldParamsDecl(from: functionParameters)
+        let bodyDecl = generateBodyDecl(from: functionParameters)
         
         let allDeclarations: [DeclSyntax] = [
             urlDecl,
             requestDecl,
-            headersExpr,
-            bodyExpr
+            headersDecl,
+            bodyDecl ?? fieldsDecl
         ].compactMap { $0 }
         
         let allDeclarationsExpr: DeclSyntax = """
@@ -154,11 +161,11 @@ public class RequestMacro: PeerMacro {
             }
         })
         
-        let headerExprs: DeclSyntax = """
+        let headersDecl: DeclSyntax = """
         \(raw: expressions.joined(separator: "\n"))
         """
         
-        return headerExprs
+        return headersDecl
     }
     
     private static func generateUrlDecl(
@@ -191,7 +198,7 @@ public class RequestMacro: PeerMacro {
             return nil
         }
         
-        let queryParamExpr: DeclSyntax = """
+        let queryParamDecl: DeclSyntax = """
         \(raw: queryParams.map { (key, value, optional) -> String in
             let appendExpr = """
             queryItems.append(URLQueryItem(name: "\(key)", value: \(value).description))
@@ -208,7 +215,42 @@ public class RequestMacro: PeerMacro {
         }.joined(separator: "\n"))
         """
         
-        return queryParamExpr
+        return queryParamDecl
+    }
+    
+    private static func generateFieldParamsDecl(from parameters: FunctionParameters) -> DeclSyntax? {
+        let fieldParams = parameters.getFieldParams().map { param in
+            let key = param.attribute.arguments.first?.value ?? param.name
+            return (key: key, value: param.name, optional: param.optional)
+        }
+        
+        if fieldParams.isEmpty {
+            return nil
+        }
+        
+        let fieldParamDecl: DeclSyntax = """
+        var form = URLComponents()
+        var formFields: [URLQueryItem] = []
+        \(raw: fieldParams.map { (key, value, optional) -> String in
+            let appendExpr = """
+            formFields.append(URLQueryItem(name: "\(key)", value: \(value).description))
+            """
+            if optional {
+                return """
+                if let \(value) {
+                    \(appendExpr)
+                }
+                """
+            } else {
+                return appendExpr
+            }
+        }.joined(separator: "\n"))
+        form.queryItems = formFields
+        request.httpBody = form.query?.data(using: .utf8)
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        """
+        
+        return fieldParamDecl
     }
     
     private static func generateEndpointExpr(
@@ -302,4 +344,12 @@ public final class PatchRequestMacro: RequestMacro {
 
 public final class DeleteRequestMacro: RequestMacro {
     override class var httpMethod: String { "DELETE" }
+}
+
+public final class HeadRequestMacro: RequestMacro {
+    override class var httpMethod: String { "HEAD" }
+}
+
+public final class OptionsRequestMacro: RequestMacro {
+    override class var httpMethod: String { "OPTIONS" }
 }
