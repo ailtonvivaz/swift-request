@@ -25,7 +25,7 @@ To make a request using SwiftRequest, you can do the following:
 let baseURL = URL(string: "https://api.quotable.io")!
 let service = QuoteService(baseURL: baseURL)
 let (quotes, _) = try await service.getRandomQuotes(limit: 5)
-let (quote, _) = try await service.getQuote(by: "69Ldsxcdm")
+let (quote, _) = try await service.getQuote(by: "69Ldsxcdm-")
 ```
 
 ## Supported HTTP Methods
