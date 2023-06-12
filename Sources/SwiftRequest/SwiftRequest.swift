@@ -4,7 +4,7 @@ public macro Service() = #externalMacro(module: "SwiftRequestMacros", type: "Ser
 
 @attached(member, names: named(baseURL), named(session), named(init(baseURL:session:)))
 @attached(conformance)
-public macro Service(route: String) = #externalMacro(module: "SwiftRequestMacros", type: "ServiceMacro")
+public macro Service(resource: String) = #externalMacro(module: "SwiftRequestMacros", type: "ServiceMacro")
 
 @attached(peer, names: overloaded)
 public macro GET<T: Decodable>(_ path: String, headers: [String: any CustomStringConvertible] = [:]) = #externalMacro(module: "SwiftRequestMacros", type: "GetRequestMacro")

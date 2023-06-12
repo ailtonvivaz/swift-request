@@ -9,10 +9,10 @@ public struct ServiceMacro: MemberMacro {
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         let attribute = Attribute(from: node)
-        let route = attribute.arguments.first?.value
+        let resource = attribute.arguments.first?.value
         
-        let baseUrlExpr = if let route {
-            "baseURL.appendingPathComponent(\"\(route)\")"
+        let baseUrlExpr = if let resource {
+            "baseURL.appendingPathComponent(\"\(resource)\")"
         } else {
             "baseURL"
         }
