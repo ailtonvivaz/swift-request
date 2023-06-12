@@ -1,7 +1,6 @@
 import Foundation
 
-let baseURL = URL(string: "https://api.quotable.io")!
-let service = QuoteService(baseURL: baseURL)
+let service = QuoteService(baseURL: "https://api.quotable.io")
 
 do {
     let (quotes, _) = try await service.getRandomQuotes(limit: 3)
