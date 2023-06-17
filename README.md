@@ -1,4 +1,6 @@
 # SwiftRequest
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Failtonvivaz%2Fswift-request%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/ailtonvivaz/swift-request)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Failtonvivaz%2Fswift-request%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/ailtonvivaz/swift-request)
 
 SwiftRequest is a lightweight, type-safe HTTP client for Swift, streamlining the construction and execution of HTTP requests.
 
@@ -19,7 +21,7 @@ protocol QuoteService {
 }
 ```
 
-To make a request using SwiftRequest, you can do the following:
+To make a request using SwiftRequest, you just need to create an instance of the service and call the method you want to use:
 
 ```swift
 let service = QuoteServiceImpl(baseURL: "https://api.quotable.io")
@@ -54,10 +56,10 @@ SwiftRequest provides several parameters that can be used in conjunction with th
     func getRandomQuotes(@QueryParam limit: Int?) async throws -> [Quote]
     ```
     In this case, the limit parameter will be used as the query parameter name. Example: `https://api.quotable.io/quotes/random?limit=10`
-- `@PathParam`: Use this property wrapper to define a path parameter in the URL. The path parameter name is optional. If it's not provided, SwiftRequest uses the property name as the path parameter name.
+- `@Path`: Use this property wrapper to define a path parameter in the URL. The path parameter name is optional. If it's not provided, SwiftRequest uses the property name as the path parameter name.
     ```swift
     @GET("{id}")
-    func getQuote(@PathParam by id: String) async throws -> Quote
+    func getQuote(@Path by id: String) async throws -> Quote
     ```
     In this case, the id parameter will be used as the path parameter name. Example: `https://api.quotable.io/quotes/123`
     > It's important to note that the path parameter name must match the name of the property that's being used to define the path parameter and need to be write in the path between curly braces.
@@ -67,10 +69,10 @@ SwiftRequest provides several parameters that can be used in conjunction with th
     func createQuote(@Body quote: Quote) async throws -> Quote
     ```
     Here, the quote parameter will be used as the request body, and the `Content-Type: application/json` header will be automatically added to the request.
-- `@FieldParam`: Use this property wrapper to define a field parameter in the request body. This wrapper can only be used with the `@POST`, `@PUT`, `@PATCH`, and `@DELETE` HTTP methods.
+- `@FormField`: Use this property wrapper to define a field parameter in the request body. This wrapper can only be used with the `@POST`, `@PUT`, `@PATCH`, and `@DELETE` HTTP methods.
     ```swift
     @POST("quotes")
-    func createQuote(@FieldParam("author") authorName: String, @FieldParam content: String) async throws -> Quote
+    func createQuote(@FormField("author") authorName: String, @FormField content: String) async throws -> Quote
     ```
     In this case, the author and content parameters will be used as field parameters in the request body, and the `Content-Type: application/x-www-form-urlencoded` header will be automatically added to the request. Example: `author=John%20Doe&content=Hello%20World`
 
