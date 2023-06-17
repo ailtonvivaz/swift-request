@@ -4,6 +4,7 @@
 
 SwiftRequest is a lightweight, type-safe HTTP client for Swift, streamlining the construction and execution of HTTP requests.
 
+[Overview](#overview) • [Installation](#installation) • [Supported HTTP Methods](#supported-http-methods) • [Parameters](#parameters) • [License](#license)
 ## Overview
 
 SwiftRequest abstracts away the repetitive boilerplate code that's typically associated with setting up HTTP requests in Swift. It utilizes macros introduced in Swift 5.9, which can be associated with specific declarations to enhance and extend their functionality.
@@ -28,6 +29,30 @@ let service = QuoteServiceImpl(baseURL: "https://api.quotable.io")
 let quotes = try await service.getRandomQuotes(limit: 5)
 let quote = try await service.getQuote(by: "69Ldsxcdm-")
 ```
+
+## Installation
+
+### Xcode
+
+> It requires Xcode 15 or later.
+
+In Xcode, go to `File > Add Package Dependency` and paste the repository URL:
+```
+https://github.com/ailtonvivaz/swift-request.git
+```
+
+### Swift Package Manager
+
+In `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/ailtonvivaz/swift-request.git", from: "0.1.0")
+]
+```
+
+And then add the dependency to your targets.
+
 
 ## Supported HTTP Methods
 
