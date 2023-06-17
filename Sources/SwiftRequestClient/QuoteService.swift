@@ -2,10 +2,10 @@ import Foundation
 import SwiftRequest
 
 @Service(resource: "quotes")
-class QuoteService {
-    @GET<[Quote]>("random")
-    private func getRandomQuotes(@QueryParam limit: Int? = nil) {}
+protocol QuoteService {
+    @GET("random")
+    func getRandomQuotes(@QueryParam limit: Int?) async throws -> [Quote]
     
-    @GET<Quote>("{id}")
-    private func getQuote(@PathParam by id: String) {}
+    @GET("{id}")
+    func getQuote(@Path by id: String) async throws -> Quote
 }

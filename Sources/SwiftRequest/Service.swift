@@ -1,15 +1,15 @@
 import Foundation
 
-public protocol Service {
-    init(baseURL: URL, session: URLSession)
-}
-
-extension Service {
+open class Service {
+    public let baseURL: URL
+    public let session: URLSession
+        
     public init(baseURL: URL, session: URLSession = .shared) {
-        self.init(baseURL: baseURL, session: session)
+        self.baseURL = baseURL
+        self.session = session
     }
     
-    public init(baseURL: String, session: URLSession = .shared) {
+    convenience public init(baseURL: String, session: URLSession = .shared) {
         guard let baseURL = URL(string: baseURL) else {
             fatalError("Invalid baseURL")
         }

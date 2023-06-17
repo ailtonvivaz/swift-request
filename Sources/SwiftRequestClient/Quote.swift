@@ -1,4 +1,4 @@
-struct Quote: Decodable {
+struct Quote: Codable {
     let id: String
     let content: String
     let author: String

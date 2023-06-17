@@ -5,10 +5,7 @@ import SwiftSyntaxMacros
 struct SwiftRequestPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         ServiceMacro.self,
-        GetRequestMacro.self,
-        PostRequestMacro.self,
-        PutRequestMacro.self,
-        PatchRequestMacro.self,
-        DeleteRequestMacro.self
+        MethodMacro.self,
+        ParamMacro.self
     ]
 }

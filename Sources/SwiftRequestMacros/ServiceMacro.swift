@@ -2,44 +2,72 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct ServiceMacro: MemberMacro {
+public struct ServiceMacro: PeerMacro {
+    static var diagnostics : ServiceDiagnostics { ServiceDiagnostics() }
+    
     public static func expansion(
         of node: AttributeSyntax,
-        providingMembersOf declaration: some DeclGroupSyntax,
+        providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
-        let attribute = Attribute(from: node)
-        let resource = attribute.arguments.first?.value
-        
-        let baseUrlExpr = if let resource {
-            "baseURL.appendingPathComponent(\"\(resource)\")"
-        } else {
-            "baseURL"
+        guard let protocolDecl = declaration.as(ProtocolDeclSyntax.self) else {
+            return []
         }
         
-        let declarations: [DeclSyntax] = [
-            """
-            private let baseURL: URL
-            private let session: URLSession
-            """,
-            """
-            required init(baseURL: URL, session: URLSession) {
-                self.baseURL = \(raw: baseUrlExpr)
-                self.session = session
-            }
-            """
-        ]
+        guard let protocolName = getProtocolName(from: declaration, in: context) else {
+            return []
+        }
         
-        return declarations
+        let resource = node.argument?.as(TupleExprElementListSyntax.self)?.first?.as(TupleExprElementSyntax.self)?.expression
+        
+        let declarations = protocolDecl.memberBlock.members
+            .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
+            .map { expansion(of: $0, with: resource, in: context) }
+            .compactMap { $0 }
+        
+        let implementationSyntax = try ClassDeclSyntax("class \(raw: protocolName)Impl: Service, \(raw: protocolName)") {
+            if let resource {
+                """
+                private lazy var resourceURL: URL = baseURL.appendingPathComponent(\(resource))
+                """ as DeclSyntax
+            }
+            for declaration in declarations {
+                declaration
+            }
+        }
+        
+        return [
+            implementationSyntax.as(DeclSyntax.self)
+        ].compactMap { $0 }
     }
-}
-
-extension ServiceMacro: ConformanceMacro {
-    public static func expansion(
-        of node: AttributeSyntax,
-        providingConformancesOf declaration: some DeclGroupSyntax,
+    
+    private static func expansion(
+        of declaration: FunctionDeclSyntax,
+        with resource: ExprSyntax?,
         in context: some MacroExpansionContext
-    ) throws -> [(TypeSyntax, GenericWhereClauseSyntax?)]  {
-        [("Service", nil)]
+    ) -> FunctionDeclSyntax? {
+        // TODO: require method
+        guard let method = declaration.attributes?.first?.as(AttributeSyntax.self)?.attributeName.description else {
+            context.diagnose(diagnostics.methodRequired(node: declaration))
+            return nil
+        }
+        
+        let expander = ServiceMethodExpander(
+            method: method,
+            resource: resource
+        )
+        return try? expander.expand(declaration: declaration, in: context)
+    }
+    
+    private static func getProtocolName(
+        from declaration: some SyntaxProtocol,
+        in context: some MacroExpansionContext
+    ) -> String? {
+        guard let protocolDecl = declaration.as(ProtocolDeclSyntax.self) else {
+            context.diagnose(diagnostics.protocolRequired(node: declaration))
+            return nil
+        }
+        
+        return protocolDecl.identifier.text
     }
 }
