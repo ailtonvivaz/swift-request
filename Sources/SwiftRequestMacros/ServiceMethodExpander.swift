@@ -52,7 +52,7 @@ class ServiceMethodExpander {
         
         let codeBlock = CodeBlockSyntax {
             VariableDeclSyntax(Keyword.let, name: "request", initializer: .init(value: request))
-            ReturnStmtSyntax(expression: "try await executor.execute(request)" as ExprSyntax)
+            ReturnStmtSyntax(expression: "try await executor(request)" as ExprSyntax)
         }
         
         let newDeclaration = declaration
