@@ -3,7 +3,7 @@ import Foundation
 public class URLSessionServiceExecutor: ServiceExecutor {
     private let session: URLSession
     
-    public init(session: URLSession = .shared) {
+    public init(_ session: URLSession = .shared) {
         self.session = session
     }
     

@@ -9,7 +9,7 @@ class AlamofireServiceExecutor: ServiceExecutor {
         let response: DataResponse<Data, AFError>
     }
     
-    init(session: Session = .default) {
+    init(_ session: Session = .default) {
         self.session = session
     }
     

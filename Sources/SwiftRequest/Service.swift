@@ -18,10 +18,10 @@ open class Service {
     }
     
     convenience public init(baseURL: URL, session: URLSession) {
-        self.init(baseURL: baseURL, executor: URLSessionServiceExecutor(session: session))
+        self.init(baseURL: baseURL, executor: URLSessionServiceExecutor(session))
     }
     
     convenience public init(baseURL: String, session: URLSession) {
-        self.init(baseURL: baseURL, executor: URLSessionServiceExecutor(session: session))
+        self.init(baseURL: baseURL, executor: URLSessionServiceExecutor(session))
     }
 }
