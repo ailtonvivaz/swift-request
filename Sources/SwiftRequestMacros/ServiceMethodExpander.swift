@@ -52,7 +52,7 @@ class ServiceMethodExpander {
         
         let codeBlock = CodeBlockSyntax {
             VariableDeclSyntax(Keyword.let, name: "request", initializer: .init(value: request))
-            ReturnStmtSyntax(expression: "try await session.execute(request)" as ExprSyntax)
+            ReturnStmtSyntax(expression: "try await executor(request)" as ExprSyntax)
         }
         
         let newDeclaration = declaration
@@ -113,7 +113,7 @@ class ServiceMethodExpander {
         of declaration: FunctionDeclSyntax,
         in context: some MacroExpansionContext
     ) -> TokenSyntax? {
-        let parameters: [FunctionPathParameter] = getParameters(from: declaration, with: "Body")
+        let parameters: [FunctionNamedParameter] = getParameters(from: declaration, with: "Body")
         
         guard parameters.count <= 1 else {
             context.diagnose(diagnostics.tooManyBodyParameters(in: declaration))
@@ -132,7 +132,7 @@ class ServiceMethodExpander {
         of declaration: FunctionDeclSyntax,
         in context: some MacroExpansionContext
     ) -> DictionaryExprSyntax? {
-        let parameters: [FunctionPathParameter] = getParameters(from: declaration, with: name)
+        let parameters: [FunctionNamedParameter] = getParameters(from: declaration, with: name)
         
         if parameters.isEmpty {
             return nil
@@ -157,7 +157,18 @@ class ServiceMethodExpander {
     ) -> ExprSyntax? {
         let arguments = attribute.argument?.as(TupleExprElementListSyntax.self)
         
-        let parameters: [FunctionPathParameter] = getParameters(from: declaration, with: "Path")
+        let parameters: [FunctionNamedParameter] = getParameters(from: declaration, with: "Path")
+        
+        for parameter in parameters {
+            if parameter.optional {
+                context.diagnose(
+                    diagnostics.optionalParameterNotSupported(
+                        in: parameter.syntax,
+                        attribute: "Path"
+                    )
+                )
+            }
+        }
         
         guard let path = arguments?.first?.expression else {
             guard parameters.isEmpty else {
@@ -179,7 +190,6 @@ class ServiceMethodExpander {
         }
         
         let replacementBlocks = getReplacementBlocks(from: path)
-        
         
         let parameterNames = parameters.map(\.name)
         

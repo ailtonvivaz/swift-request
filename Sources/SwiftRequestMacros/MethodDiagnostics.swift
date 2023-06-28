@@ -91,4 +91,12 @@ struct MethodDiagnostics: Diagnostics {
             id: "tooManyBodyParameters"
         )
     }
+
+    func optionalParameterNotSupported(in node: FunctionParameterSyntax, attribute: String) -> Diagnostic {
+        diagnostic(
+            for: node,
+            message: "@\(attribute) does not support optional parameters",
+            id: "optionalParameterNotSupported"
+        )
+    }
 }

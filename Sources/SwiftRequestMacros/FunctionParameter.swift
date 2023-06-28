@@ -28,7 +28,3 @@ class FunctionNamedParameter: FunctionParameter {
         super.init(syntax)
     }
 }
-
-class FunctionPathParameter: FunctionNamedParameter {
-    
-}

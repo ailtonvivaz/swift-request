@@ -12,11 +12,7 @@ let package = Package(
         .library(
             name: "SwiftRequest",
             targets: ["SwiftRequest"]
-        ),
-        .executable(
-            name: "SwiftRequestClient",
-            targets: ["SwiftRequestClient"]
-        ),
+        )
     ],
     dependencies: [
         // Depend on the latest Swift 5.9 prerelease of SwiftSyntax
@@ -36,9 +32,6 @@ let package = Package(
 
         // Library that exposes a macro as part of its API, which is used in client programs.
         .target(name: "SwiftRequest", dependencies: ["SwiftRequestMacros"]),
-
-        // A client of the library, which is able to use the macro in its own code.
-        .executableTarget(name: "SwiftRequestClient", dependencies: ["SwiftRequest"]),
 
         // A test target used to develop the macro implementation.
         .testTarget(
