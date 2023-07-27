@@ -6,9 +6,11 @@ public struct Request {
     let queryParams: Params?
     let headers: Params?
     let formFields: Params?
+    let bodyFields: BodyParams?
     let body: (any Encodable)?
     
     public typealias Params = [String: (any CustomStringConvertible)?]
+    public typealias BodyParams = [String: (any Encodable)?]
     
     public init(
         url: URL,
@@ -16,6 +18,7 @@ public struct Request {
         queryParams: Params? = nil,
         headers: Params? = nil,
         formFields: Params? = nil,
+        bodyFields: BodyParams? = nil,
         body: (any Encodable)? = nil
     ) {
         self.url = url
@@ -23,6 +26,7 @@ public struct Request {
         self.queryParams = queryParams
         self.headers = headers
         self.formFields = formFields
+        self.bodyFields = bodyFields
         self.body = body
     }
 }

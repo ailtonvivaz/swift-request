@@ -47,7 +47,7 @@ public class MethodMacro: PeerMacro {
         outputType: TypeSyntax,
         in context: some MacroExpansionContext
     ) -> Bool {
-        if outputType.is(SimpleTypeIdentifierSyntax.self) {
+        if outputType.is(SimpleTypeIdentifierSyntax.self) || outputType.is(MemberTypeIdentifierSyntax.self) {
             return true
         }
         

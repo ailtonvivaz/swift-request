@@ -103,6 +103,10 @@ class ServiceMethodExpander {
                 TupleExprElementSyntax(label: "formFields", expression: formFields)
             }
             
+            if let bodyFields = expandParameter("BodyField", of: declaration, in: context) {
+                TupleExprElementSyntax(label: "bodyFields", expression: bodyFields)
+            }
+            
             if let body = expandBody(of: declaration, in: context) {
                 TupleExprElementSyntax(label: "body", expression: IdentifierExprSyntax(identifier: body))
             }

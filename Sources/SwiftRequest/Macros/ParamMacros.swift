@@ -11,4 +11,7 @@ public macro Header(_ name: String = "") = #externalMacro(module: "SwiftRequestM
 public macro FormField(_ name: String = "") = #externalMacro(module: "SwiftRequestMacros", type: "ParamMacro")
 
 @attached(member)
+public macro BodyField(_ name: String = "") = #externalMacro(module: "SwiftRequestMacros", type: "ParamMacro")
+
+@attached(member)
 public macro Body() = #externalMacro(module: "SwiftRequestMacros", type: "BodyMacro")

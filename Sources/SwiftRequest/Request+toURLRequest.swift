@@ -34,6 +34,8 @@ public extension Request {
             } else {
                 request.httpBody = try JSONEncoder().encode(body)
             }
+        } else if let bodyFields {
+            request.httpBody = try JSONSerialization.data(withJSONObject: bodyFields)
         }
         
         if let headers {
